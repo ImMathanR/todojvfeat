@@ -1,0 +1,70 @@
+apply plugin: 'com.android.application'
+
+apply plugin: 'kotlin-android'
+
+apply plugin: 'kotlin-android-extensions'
+
+android {
+    compileSdkVersion 27
+    defaultConfig {
+        applicationId "me.immathan.todoapp_jvfeat"
+        minSdkVersion 21
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation"org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    implementation "com.android.support:appcompat-v7:$supportVersion"
+    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
+    implementation "com.android.support:design:$supportVersion"
+
+    implementation "android.arch.persistence.room:runtime:$archVersion"
+    annotationProcessor "android.arch.persistence.room:compiler:$archVersion"
+    implementation "android.arch.persistence.room:rxjava2:$archVersion"
+    implementation "android.arch.lifecycle:extensions:$archVersion"
+
+    implementation "com.google.dagger:dagger:$daggerVersion"
+    annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
+
+    annotationProcessor "com.google.dagger:dagger-android-processor:$daggerVersion"
+    implementation "com.google.dagger:dagger-android-support:$daggerVersion"
+    // if you are not using support library, include this instead
+    implementation "com.google.dagger:dagger-android:$daggerVersion"
+
+    // ReactiveX
+    implementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
+    implementation "io.reactivex.rxjava2:rxandroid:$rxAndroidVersion"
+
+    implementation "com.android.support:recyclerview-v7:$supportVersion"
+
+    // Retrofit
+    implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
+    // GSON Converter
+    implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
+
+    // Room Database
+    implementation "android.arch.persistence.room:runtime:$archVersion"
+    implementation "android.arch.persistence.room:rxjava2:$archVersion"
+    annotationProcessor "android.arch.persistence.room:compiler:$archVersion"
+
+    // RxRelay
+    implementation "com.jakewharton.rxrelay2:rxrelay:$rxRelayVersion"
+
+    // RxLint
+    implementation "nl.littlerobots.rxlint:rxlint:$rxLintVersion"
+
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+}
