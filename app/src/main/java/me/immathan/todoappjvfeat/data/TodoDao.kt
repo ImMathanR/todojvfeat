@@ -4,9 +4,8 @@ import android.arch.persistence.room.*
 import io.reactivex.Flowable
 import me.immathan.todoappjvfeat.model.Todo
 
-
 /**
- * @author Mathan on 15/05/18
+ * @author Mathan on 23/05/18
  */
 @Dao
 interface TodoDao {

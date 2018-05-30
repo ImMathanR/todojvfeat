@@ -4,13 +4,14 @@ import android.arch.persistence.room.Database
 import android.arch.persistence.room.Room
 import android.arch.persistence.room.RoomDatabase
 import android.content.Context
+import me.immathan.todoappjvfeat.model.Task
 import me.immathan.todoappjvfeat.model.Todo
 
 
 /**
  * @author Mathan on 15/05/18
  */
-@Database(entities = [(Todo::class)], version = 1, exportSchema = false)
+@Database(entities = [(Task::class), (Todo::class)], version = 1, exportSchema = false)
 abstract class TodoDatabase : RoomDatabase() {
 
     companion object {
@@ -28,6 +29,8 @@ abstract class TodoDatabase : RoomDatabase() {
             return instance as TodoDatabase
         }
     }
+
+    abstract fun taskDao(): TaskDao
 
     abstract fun todoDao(): TodoDao
 }

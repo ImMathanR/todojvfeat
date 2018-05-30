@@ -36,5 +36,7 @@ ext {
     retrofitVersion = "2.1.0"
     rxRelayVersion = "2.0.0"
     rxLintVersion = "1.6"
+    firebaseJobDispatcher = "0.8.5"
+    loggerVersion = "1.5.4"
 
 }
