@@ -18,6 +18,7 @@ import me.immathan.todoappjvfeat.presentation.TaskViewModel
 import me.immathan.todoappjvfeat.utils.Logger
 import me.immathan.todoappjvfeat.utils.isEmpty
 import me.immathan.todoappjvfeat.utils.strike
+import me.immathan.todoappjvfeat.utils.toast
 
 
 /**
@@ -103,9 +104,14 @@ class TodoAddAdapter : RecyclerView.Adapter<TodoAddAdapter.BaseDraggableHolder>(
             if (actionId == EditorInfo.IME_ACTION_NEXT) {
 
                 if (!holder.taskText.isEmpty()) {
-                    taskViewModel?.addTasks(holder.taskText.text.toString(), todo)
-                    holder.taskText.setText("")
-                    Logger.d(TAG, "Task added")
+                    if (todo != null) {
+                        taskViewModel?.addTasks(holder.taskText.text.toString(), todo)
+                        holder.taskText.setText("")
+                        Logger.d(TAG, "Task added")
+                    } else {
+                        "Please enter a valid Title".toast(holder.taskText.context)
+                        return@setOnEditorActionListener false
+                    }
                 }
 
                 return@setOnEditorActionListener true

@@ -9,6 +9,7 @@ gen
 build
 out
 lib
+.gradle
 
 target
 pom.xml.*
