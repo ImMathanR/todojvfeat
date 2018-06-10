@@ -30,6 +30,7 @@
         android:hint="New item"
         android:inputType="textCapSentences"
         android:maxLines="1"
+        android:imeOptions="actionNext"
         android:singleLine="true"
         android:textColorHint="@color/new_item"
         android:textSize="18sp"

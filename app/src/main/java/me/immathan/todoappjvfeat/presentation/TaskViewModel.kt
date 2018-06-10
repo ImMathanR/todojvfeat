@@ -8,6 +8,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import me.immathan.todoappjvfeat.domain.AddTaskUseCase
 import me.immathan.todoappjvfeat.domain.GetTasksUseCase
+import me.immathan.todoappjvfeat.domain.UpdateTaskUseCase
 import me.immathan.todoappjvfeat.model.Task
 import me.immathan.todoappjvfeat.model.Todo
 import me.immathan.todoappjvfeat.utils.Logger
@@ -16,19 +17,16 @@ import me.immathan.todoappjvfeat.utils.Logger
  * @author Mathan on 19/05/18
  */
 class TaskViewModel(private val addTaskUseCase: AddTaskUseCase,
-                    private val getTasksUseCase: GetTasksUseCase) : ViewModel() {
+                    private val getTasksUseCase: GetTasksUseCase,
+                    private val updateTaskUseCase: UpdateTaskUseCase) : ViewModel() {
 
     companion object {
-        val TAG = TaskViewModel.javaClass.simpleName
+        val TAG = TaskViewModel::class.java.simpleName
     }
 
-    private val todosLiveData = MutableLiveData<List<Task>>()
+    private val tasksLiveData = MutableLiveData<List<Task>>()
 
     private val disposable = CompositeDisposable()
-
-    init {
-        loadTasks()
-    }
 
     override fun onCleared() {
         disposable.clear()
@@ -38,21 +36,32 @@ class TaskViewModel(private val addTaskUseCase: AddTaskUseCase,
         disposable.add(addTaskUseCase.addTask(task, todo!!)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ Logger.d(TAG, "Task added successfully") }, { Logger.d(TAG, "Task failed with error $it") }))
+                .subscribe({ Logger.d(TAG, "Task added successfully") }, { Logger.d(TAG, "Task failed with error ${it.localizedMessage}") }))
     }
 
-    public fun allTasks(): LiveData<List<Task>> {
-        return todosLiveData
+    fun updateTask(task: Task) {
+        disposable.add(updateTaskUseCase.updateUseCase(task)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    Logger.d(TAG, "Task updated")
+                }, {
+                    Logger.d(TAG, "Task update failed ${it.localizedMessage}")
+                }))
     }
 
-    private fun loadTasks() {
-        disposable.add(getTasksUseCase.getTasks()
+    fun loadTasks(todo: Todo) {
+        disposable.add(getTasksUseCase.getTasks(todo)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     Logger.d(TAG, "Todos prepared successfully")
-                    todosLiveData.value = it
-                }, { Logger.d(TAG, "Todos not able to receive $it") }))
+                    tasksLiveData.value = it
+                }, { Logger.d(TAG, "Todos not able to receive ${it.localizedMessage}") }))
+    }
+
+    fun allTasks(): LiveData<List<Task>> {
+        return tasksLiveData
     }
 
 }

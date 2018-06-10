@@ -17,7 +17,7 @@ class TodoViewModel(private val addTodoUseCase: AddTodoUseCase,
                     private val getTodoUseCase: GetTodoUseCase) : ViewModel() {
 
     companion object {
-        val TAG = TodoViewModel.javaClass.simpleName
+        val TAG = TodoViewModel::class.java.simpleName
     }
 
     private val todosLiveData = MutableLiveData<List<Todo>>()
@@ -26,6 +26,7 @@ class TodoViewModel(private val addTodoUseCase: AddTodoUseCase,
 
     public override fun onCleared() {
         disposable.clear()
+        loadTodos()
     }
 
     public fun todos(): MutableLiveData<List<Todo>> {
@@ -41,6 +42,10 @@ class TodoViewModel(private val addTodoUseCase: AddTodoUseCase,
                     Logger.d(TAG, "Todo added successfully")
                     todoAdded.invoke(it)
                 }, { Logger.d(TaskViewModel.TAG, "Todo failed with error $it") }))
+    }
+
+    public fun updateTodo(todoModal: Todo) {
+
     }
 
     private fun loadTodos() {

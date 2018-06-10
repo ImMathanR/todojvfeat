@@ -20,11 +20,13 @@ interface TodoListActivityModule {
 
     fun getTodoUseCase(localTodoRepository: LocalTodoRepository): GetTodoUseCase
 
+    fun updateTaskUseCase(localTaskRepository: LocalTaskRepository): UpdateTaskUseCase
+
     fun getTasksViewModelFactory(localTaskRepository: LocalTaskRepository): TaskViewModelFactory
 
     fun getTodoViewModelFactory(localTodoRepository: LocalTodoRepository): TodoViewModelFactory
 
-    fun getTodoViewModel(fragmentActivity: FragmentActivity, viewModelFactory: TodoViewModelFactory) : TodoViewModel
+    fun getTodoViewModel(fragmentActivity: FragmentActivity, viewModelFactory: TodoViewModelFactory): TodoViewModel
 
     fun getTaskViewModel(fragmentActivity: FragmentActivity, viewModelFactory: TaskViewModelFactory): TaskViewModel
 

@@ -14,7 +14,7 @@ import me.immathan.todoappjvfeat.utils.Logger
 class LocalTasksDaoStore(private val taskDao: TaskDao) : LocalTaskRepository {
 
     companion object {
-        val TAG = LocalTasksDaoStore.javaClass.simpleName!!
+        val TAG = LocalTasksDaoStore::class.java.simpleName!!
     }
 
     override fun add(task: String, todo: Todo): Single<Task> {
@@ -38,7 +38,12 @@ class LocalTasksDaoStore(private val taskDao: TaskDao) : LocalTaskRepository {
 
     override fun getTasks(): Flowable<List<Task>> {
         Logger.d(TAG, "Retrieving Todos")
-        return taskDao.getTodo()
+        return taskDao.getTasks()
+    }
+
+    override fun getTasks(todo: Todo): Flowable<List<Task>> {
+        Logger.d(TAG, "Retrieving Todos: " + todo.groupId)
+        return taskDao.getTasks(todo.groupId)
     }
 
 }

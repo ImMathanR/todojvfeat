@@ -13,7 +13,7 @@ import me.immathan.todoappjvfeat.utils.Logger
 class LocalTodoDaoStore(private val todoDao: TodoDao) : LocalTodoRepository {
 
     companion object {
-        val TAG = LocalTodoDaoStore.javaClass.simpleName!!
+        val TAG = LocalTodoDaoStore::class.java.simpleName!!
     }
 
     override fun add(todo: String): Single<Todo> {

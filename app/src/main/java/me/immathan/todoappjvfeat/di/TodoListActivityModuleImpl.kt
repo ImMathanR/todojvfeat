@@ -15,13 +15,15 @@ class TodoListActivityModuleImpl : TodoListActivityModule {
 
     override fun addTaskUseCase(localTaskRepository: LocalTaskRepository) = AddTaskUseCase(localTaskRepository)
 
+    override fun updateTaskUseCase(localTaskRepository: LocalTaskRepository) = UpdateTaskUseCase(localTaskRepository)
+
     override fun getTasksUseCase(localTaskRepository: LocalTaskRepository) = GetTasksUseCase(localTaskRepository)
 
     override fun addTodoUseCase(localTodoRepository: LocalTodoRepository) = AddTodoUseCase(localTodoRepository)
 
     override fun getTodoUseCase(localTodoRepository: LocalTodoRepository) = GetTodoUseCase(localTodoRepository)
 
-    override fun getTasksViewModelFactory(localTaskRepository: LocalTaskRepository) = TaskViewModelFactory(addTaskUseCase(localTaskRepository), getTasksUseCase(localTaskRepository))
+    override fun getTasksViewModelFactory(localTaskRepository: LocalTaskRepository) = TaskViewModelFactory(addTaskUseCase(localTaskRepository), getTasksUseCase(localTaskRepository), updateTaskUseCase(localTaskRepository))
 
     override fun getTodoViewModelFactory(localTodoRepository: LocalTodoRepository) = TodoViewModelFactory(addTodoUseCase(localTodoRepository), getTodoUseCase(localTodoRepository))
 

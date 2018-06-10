@@ -21,6 +21,9 @@ interface TaskDao {
     fun delete(task: Task)
 
     @Query("SELECT * FROM Task ORDER BY ts DESC")
-    fun getTodo(): Flowable<List<Task>>
+    fun getTasks(): Flowable<List<Task>>
+
+    @Query("SELECT * FROM Task WHERE group_id = :id ORDER BY ts DESC")
+    fun getTasks(id: Long): Flowable<List<Task>>
 
 }

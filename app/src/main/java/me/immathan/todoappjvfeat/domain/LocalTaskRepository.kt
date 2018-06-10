@@ -19,4 +19,6 @@ interface LocalTaskRepository {
 
     fun getTasks(): Flowable<List<Task>>
 
+    fun getTasks(todo: Todo): Flowable<List<Task>>
+
 }

@@ -29,6 +29,7 @@
         android:background="@android:color/transparent"
         android:inputType="textCapSentences"
         android:maxLines="1"
+        android:imeOptions="actionNext"
         android:singleLine="true"
         android:textSize="18sp"/>
 

@@ -10,7 +10,7 @@ import retrofit2.http.POST
  */
 interface TodoApi {
 
-    @POST("/todos")
+    @POST("/tasks")
     fun addTodo(@Body task: Task): Call<Task>
 
 }
