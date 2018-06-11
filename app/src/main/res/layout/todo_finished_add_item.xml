@@ -1,43 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:gravity="center_vertical"
-    android:padding="10dp">
+    android:layout_height="wrap_content">
 
-    <android.support.v7.widget.AppCompatImageView
-        android:id="@+id/dragIcon"
-        android:layout_width="18dp"
-        android:layout_height="22dp"
-        android:scaleType="centerInside"
-        android:src="@drawable/ic_drag_drop"
-        android:tint="@color/new_item"/>
-
-    <android.support.v7.widget.AppCompatCheckBox
-        android:id="@+id/checkbox"
-        android:layout_width="36dp"
-        android:layout_height="18dp"
-        android:checked="true"/>
-
-    <android.support.v7.widget.AppCompatEditText
-        android:id="@+id/taskText"
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:background="@android:color/transparent"
-        android:inputType="textCapSentences"
-        android:maxLines="1"
-        android:imeOptions="actionNext"
-        android:singleLine="true"
-        android:textSize="18sp"/>
+        android:layout_height="36dp"
+        android:clickable="true"
+        android:gravity="center"
+        android:orientation="horizontal">
 
-    <android.support.v7.widget.AppCompatImageView
-        android:id="@+id/cross"
-        android:layout_width="18dp"
-        android:layout_height="18dp"
-        android:layout_weight="0"
-        android:src="@drawable/ic_close"/>
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/dragIcon"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:clickable="true"
+            android:padding="6dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_drag_drop"
+            android:tint="@color/new_item"/>
 
-</LinearLayout>
+        <android.support.v7.widget.AppCompatCheckBox
+            android:id="@+id/checkbox"
+            android:layout_width="36dp"
+            android:layout_height="18dp"
+            android:checked="true"/>
+
+        <android.support.v7.widget.AppCompatEditText
+            android:id="@+id/taskText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:imeOptions="actionNext"
+            android:inputType="textCapSentences"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:textSize="18sp"/>
+
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/cross"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_weight="0"
+            android:src="@drawable/ic_close"/>
+
+    </LinearLayout>
+
+</FrameLayout>

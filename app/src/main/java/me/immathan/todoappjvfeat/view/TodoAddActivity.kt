@@ -5,8 +5,11 @@ import android.arch.lifecycle.Observer
 import android.os.Bundle
 import android.support.v7.util.DiffUtil
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import com.h6ah4i.android.widget.advrecyclerview.draggable.RecyclerViewDragDropManager
+import com.h6ah4i.android.widget.advrecyclerview.utils.WrapperAdapterUtils
 import kotlinx.android.synthetic.main.activity_todo_add.*
 import me.immathan.todoappjvfeat.R
 import me.immathan.todoappjvfeat.TodoApp
@@ -18,6 +21,7 @@ import me.immathan.todoappjvfeat.utils.toast
 import me.immathan.todoappjvfeat.view.adapter.TasksDiffUtilCallback
 import me.immathan.todoappjvfeat.view.adapter.TodoAddAdapter
 import me.immathan.todoappjvfeat.view.base.BaseActivity
+
 
 class TodoAddActivity : BaseActivity() {
 
@@ -47,15 +51,27 @@ class TodoAddActivity : BaseActivity() {
         TodoAddAdapter()
     }
 
+    private var recyclerViewDragDropManager = RecyclerViewDragDropManager()
+
+    private var wrappedAdapter: RecyclerView.Adapter<TodoAddAdapter.BaseDraggableHolder>? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_todo_add)
 
         todoRecyclerView.layoutManager = LinearLayoutManager(applicationContext)
-        todoRecyclerView.adapter = todoAdapter
+
+        // drag & drop manager
+        /*recyclerViewDragDropManager.setDraggingItemShadowDrawable(
+                ContextCompat.getDrawable(applicationContext, R.drawable.material_nine_patch) as NinePatchDrawable?)*/
+
+        wrappedAdapter = recyclerViewDragDropManager.createWrappedAdapter(todoAdapter) as RecyclerView.Adapter<TodoAddAdapter.BaseDraggableHolder>?;
+
+        todoRecyclerView.adapter = wrappedAdapter
         todoAdapter.tasks = mutableListOf()
         todoAdapter.notifyDataSetChanged()
         todoAdapter.taskViewModel = taskViewModel
+        recyclerViewDragDropManager.attachRecyclerView(todoRecyclerView)
 
         titleET.requestFocus()
 
@@ -68,7 +84,7 @@ class TodoAddActivity : BaseActivity() {
             val diffResult = DiffUtil.calculateDiff(TasksDiffUtilCallback(todoAdapter.tasks!!, tasksList!!))
             diffResult.dispatchUpdatesTo(todoAdapter)
 
-            todoAdapter.tasks = tasksList
+            todoAdapter.tasks = tasksList.toMutableList()
         })
 
         titleET.onFocusChangeListener = View.OnFocusChangeListener { v, hasFocus ->
@@ -121,11 +137,27 @@ class TodoAddActivity : BaseActivity() {
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        recyclerViewDragDropManager.cancelDrag()
+    }
+
     override fun onResume() {
         super.onResume()
         titleET.timeout(100, {
             titleET.requestFocus()
         })
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        recyclerViewDragDropManager.release()
+
+        todoRecyclerView.itemAnimator = null
+        todoRecyclerView.adapter = null
+
+        WrapperAdapterUtils.releaseAll(wrappedAdapter)
+        wrappedAdapter = null
     }
 
 }

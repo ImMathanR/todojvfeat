@@ -11,6 +11,11 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.LinearLayout
+import com.h6ah4i.android.widget.advrecyclerview.draggable.DraggableItemAdapter
+import com.h6ah4i.android.widget.advrecyclerview.draggable.DraggableItemConstants
+import com.h6ah4i.android.widget.advrecyclerview.draggable.ItemDraggableRange
+import com.h6ah4i.android.widget.advrecyclerview.utils.AbstractDraggableItemViewHolder
 import me.immathan.todoappjvfeat.R
 import me.immathan.todoappjvfeat.model.Task
 import me.immathan.todoappjvfeat.model.Todo
@@ -24,7 +29,15 @@ import me.immathan.todoappjvfeat.utils.toast
 /**
  * @author Mathan on 23/05/18
  */
-class TodoAddAdapter : RecyclerView.Adapter<TodoAddAdapter.BaseDraggableHolder>() {
+class TodoAddAdapter : RecyclerView.Adapter<TodoAddAdapter.BaseDraggableHolder>(),
+        DraggableItemAdapter<TodoAddAdapter.BaseDraggableHolder> {
+
+    // NOTE: Make accessible with short name
+    public interface Draggable : DraggableItemConstants
+
+    init {
+        setHasStableIds(true)
+    }
 
     companion object {
         val TAG = TodoAddAdapter::class.java.simpleName!!
@@ -33,7 +46,7 @@ class TodoAddAdapter : RecyclerView.Adapter<TodoAddAdapter.BaseDraggableHolder>(
         const val FINISHED_TASK = 3
     }
 
-    var tasks: List<Task>? = null
+    var tasks: MutableList<Task>? = null
     var todo: Todo? = null
 
     var taskViewModel: TaskViewModel? = null
@@ -78,17 +91,30 @@ class TodoAddAdapter : RecyclerView.Adapter<TodoAddAdapter.BaseDraggableHolder>(
                     }
                 })
             }
-            EXISTING_TASK -> {
+            EXISTING_TASK, FINISHED_TASK -> {
                 val task = tasks?.get(position)
                 holder.taskText.setText(task?.task)
                 holder.check.isChecked = task?.status!!
                 holder.taskText.strike(task.status)
-            }
-            FINISHED_TASK -> {
-                val task = tasks?.get(position)
-                holder.taskText.setText(task?.task)
-                holder.check.isChecked = task?.status!!
-                holder.taskText.strike(task.status)
+                // set background resource (target view ID: container)
+                val dragState = holder.dragStateFlags
+
+                if (dragState != 0 && DraggableItemConstants.STATE_FLAG_IS_UPDATED !== 0) {
+                    val bgResId: Int
+
+                    if (dragState and DraggableItemConstants.STATE_FLAG_IS_ACTIVE !== 0) {
+                        //bgResId = R.drawable.bg_item_dragging_active_state
+
+                        // need to clear drawable state here to get correct appearance of the dragging item.
+                        //DrawableUtils.clearState(holder.mContainer.getForeground())
+                    } else if (dragState and DraggableItemConstants.STATE_FLAG_DRAGGING !== 0 && dragState and DraggableItemConstants.STATE_FLAG_IS_IN_RANGE !== 0) {
+                        //bgResId = R.drawable.bg_item_dragging_state
+                    } else {
+                        //bgResId = R.drawable.bg_item_normal_state
+                    }
+
+                    //holder.mContainer.setBackgroundResource(bgResId)
+                }
             }
         }
 
@@ -121,6 +147,13 @@ class TodoAddAdapter : RecyclerView.Adapter<TodoAddAdapter.BaseDraggableHolder>(
 
     }
 
+    override fun getItemId(position: Int): Long {
+        if (position <= tasks?.size!! - 1) {
+            return tasks?.get(position)?.id!!
+        }
+        return 10001;
+    }
+
     override fun getItemViewType(position: Int): Int {
         if (tasks == null || tasks!!.isEmpty() || position == tasks!!.size) {
             // This means there is no Todos and we are going to display NEW_TASK view holder
@@ -134,7 +167,79 @@ class TodoAddAdapter : RecyclerView.Adapter<TodoAddAdapter.BaseDraggableHolder>(
             EXISTING_TASK
     }
 
-    open class BaseDraggableHolder(open val view: View) : RecyclerView.ViewHolder(view) {
+    override fun onGetItemDraggableRange(holder: BaseDraggableHolder?, position: Int): ItemDraggableRange {
+        val freshTasks = tasks?.filter {
+            !it.status
+        }
+        Logger.d(TAG, "position $position")
+        Logger.d(TAG, "Fresh task size: ${freshTasks?.size}")
+        if (tasks?.size == 0) {
+            Logger.d(TAG, "Trying to move New task")
+            return ItemDraggableRange(0, 0)
+        }
+        if (freshTasks?.size!! - 1 >= position) {
+            Logger.d(TAG, "Dragging inside Existing tasks")
+            return ItemDraggableRange(0, freshTasks.size - 1)
+        }
+        if (freshTasks.size - 1 < position) {
+            Logger.d(TAG, "Dragging inside Finished tasks")
+            return ItemDraggableRange(freshTasks.size, tasks?.size!!)
+        }
+        Logger.d(TAG, "Came out of all the conditions")
+        return ItemDraggableRange(0, 0)
+    }
+
+    override fun onCheckCanStartDrag(holder: BaseDraggableHolder?, position: Int, x: Int, y: Int): Boolean {
+        Logger.d(TAG, "OnCheckcanstartdrag: $position")
+        if (position == tasks?.size) {
+            Logger.d(TAG, "Dragging new task")
+            return false
+        }
+
+        val offsetX = holder?.container?.left!! + (holder.container.translationX + 0.5f)
+        val offsetY = holder.container.top + (holder.container.translationY + 0.5f)
+
+        val result = hitTest(holder.dragIcon, (x - offsetX).toInt(), (y - offsetY).toInt());
+        return result
+    }
+
+    override fun onItemDragStarted(position: Int) {
+        Logger.d(TAG, "Item drag started $position")
+        notifyDataSetChanged()
+    }
+
+    override fun onMoveItem(fromPosition: Int, toPosition: Int) {
+        Logger.d(TAG, "on move item. From: $fromPosition - To: $toPosition")
+        val task = tasks?.removeAt(fromPosition)
+        tasks?.add(toPosition, task!!)
+    }
+
+    override fun onCheckCanDrop(draggingPosition: Int, dropPosition: Int): Boolean {
+        Logger.d(TAG, "onCheckCanDrop dragginPosition: $draggingPosition and dropPosition: $dropPosition")
+        if(tasks?.size!! -1 == dropPosition) {
+            return false
+        }
+        return true
+    }
+
+    override fun onItemDragFinished(fromPosition: Int, toPosition: Int, result: Boolean) {
+        Logger.d(TAG, "Item drag finished. fromPosition: $fromPosition - toPosition: $toPosition - result: $result")
+        notifyDataSetChanged()
+    }
+
+    private fun hitTest(v: View, x: Int, y: Int): Boolean {
+        val tx = (v.translationX + 0.5f).toInt()
+        val ty = (v.translationY + 0.5f).toInt()
+        val left = v.left + tx
+        val right = v.right + tx
+        val top = v.top + ty
+        val bottom = v.bottom + ty
+
+        return x in left..right && y >= top && y <= bottom
+    }
+
+    open class BaseDraggableHolder(open val view: View) : AbstractDraggableItemViewHolder(view) {
+
         val dragIcon: ImageView by lazy {
             view.findViewById(R.id.dragIcon) as ImageView
         }
@@ -143,6 +248,9 @@ class TodoAddAdapter : RecyclerView.Adapter<TodoAddAdapter.BaseDraggableHolder>(
         }
         val taskText: EditText by lazy {
             view.findViewById(R.id.taskText) as EditText
+        }
+        val container: LinearLayout by lazy {
+            view.findViewById(R.id.container) as LinearLayout
         }
     }
 
